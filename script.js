@@ -1,5 +1,8 @@
 const question = document.getElementById("question")
 const choices = document.querySelectorAll(".choice-text")
+const progressText = document.getElementById("progressText")
+const scoreText=document.getElementById("score")
+const progressBarFull = document.getElementById("progressBarFull")
 
 let currentQuestion = {}
 let acceptingAnswers = false
@@ -53,12 +56,19 @@ getNewQuestion = () => {
 
 
     if(avaibleQuestions.length === 0 || questionCounter >= MAX_QUESTIONS) {
+        localStorage.setItem('mostRecentScore', score)
 
         //Soru bittiğinde ana ekrana dön.
         return window.location.assign("/end.html")
     }
 
     questionCounter++;
+    progressText.innerText=`Question ${questionCounter}/${MAX_QUESTIONS}`
+
+    //Progress Barı Güncelle
+    
+    progressBarFull.style.width = `${(questionCounter / MAX_QUESTIONS) * 100}%`
+
     const questionIndex = Math.floor(Math.random() * avaibleQuestions.length)
     currentQuestion= avaibleQuestions[questionIndex]
     question.innerHTML=currentQuestion.question
@@ -90,6 +100,15 @@ choices.forEach(choice => {
             
         const classToApply= selectedAnswer==currentQuestion.answer ? 'correct' : 'incorrect'
 
+        if (classToApply==='correct') {
+
+            incrementScore(CORRECT_BONUS)
+
+        }
+
+        
+
+        
         selectedChoice.parentElement.classList.add(classToApply)
 
         setTimeout(() => {
@@ -104,4 +123,11 @@ choices.forEach(choice => {
     })
 })
 
+incrementScore = num => {
+
+    score += num
+    scoreText.innerHTML= score
+
+}
 startGame()
+
